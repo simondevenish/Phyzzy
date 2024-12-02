@@ -12,6 +12,10 @@
 
 #include "common.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define PI 3.14159265359f
 #define TAU 6.28318530718f
 #define DEG2RAD(x) ((x) * (PI / 180.0f))
@@ -288,3 +292,6 @@ typedef struct { i32 x, y; } v2i;
 typedef struct { i32 x, y, z; } v3i;
 typedef struct { i32 x, y, z, w; } v4i;
 
+#ifdef __cplusplus
+}
+#endif

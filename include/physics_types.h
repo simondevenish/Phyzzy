@@ -14,6 +14,10 @@
 
 #include "math_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Physical material properties
 typedef struct {
     f32 friction;      // Coefficient of friction (0 = no friction, 1 = high friction)
@@ -73,6 +77,8 @@ typedef struct {
     ColliderType type;
     PhysicsMaterial material;
     Transform transform; // Position, rotation, and scale of the collider
+    f32 restitution_coefficient;
+    f32 bounding_sphere_radius;
     union {
         Sphere sphere;
         AABB aabb;
@@ -80,6 +86,7 @@ typedef struct {
         Plane plane;
         BoundingCapsule capsule;
         Mesh mesh;
+        f32 bounding_sphere_radius;
     };
 } Collider;
 
@@ -403,6 +410,9 @@ typedef struct {
     AABB bounds;          // Bounds of the zone
     v3 gravity_override;  // Override for gravity in this zone
     f32 friction_override; // Override for friction
+    f32 static_friction_coefficient;
+    f32 restitution_coefficient;
+    f32 plane_y;
     bool affects_all;      // True if the zone affects all objects
     bool is_wet;           // Indicates if the surface is wet
     bool is_icy;           // Indicates if the surface is icy
@@ -417,3 +427,7 @@ typedef struct {
     v3 deformation_vector; // Deformation applied to the sticker
     bool scales_with_surface; // Whether the sticker scales with surface changes
 } DecalPhysics;
+
+#ifdef __cplusplus
+}
+#endif

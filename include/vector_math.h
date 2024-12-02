@@ -15,6 +15,10 @@
 
 #include "math_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define FORCEINLINE static inline
 
 FORCEINLINE f32 min(f32 a, f32 b) { return a < b ? a : b; }
@@ -731,3 +735,7 @@ FORCEINLINE f32 cubic_interpolate(f32 p0, f32 p1, f32 p2, f32 p3, f32 t) {
                    (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t2 +
                    (-p0 + 3.0f * p1 - 3.0f * p2 + p3) * t3);
 }
+
+#ifdef __cplusplus
+}
+#endif
