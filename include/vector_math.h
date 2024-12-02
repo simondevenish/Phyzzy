@@ -156,12 +156,12 @@ FORCEINLINE bool v3_not_equals(const v3* a, const v3* b) {
     return a->x != b->x || a->y != b->y || a->z != b->z;
 }
 
-FORCEINLINE f32 v3_magnitude(const v3* v) {
-    return sqrtf((v->x * v->x) + (v->y * v->y) + (v->z * v->z));
+FORCEINLINE f32 v3_magnitude(v3 v) {
+    return sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
 }
 
 FORCEINLINE v3 v3_normalize(v3 v) {
-    f32 mag = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z);
+    f32 mag = v3_magnitude(v);
     if (mag > 0.0f) {
         return v3_scale(v, 1.0f / mag);
     } else {
@@ -268,6 +268,15 @@ FORCEINLINE v4 v4_make(f32 x, f32 y, f32 z, f32 w) {
     vec.w = w;
     return vec;
 }
+
+FORCEINLINE v3 m3_multiply_v3(m3 matrix, v3 vector) {
+    v3 result;
+    result.x = matrix.m[0][0] * vector.x + matrix.m[0][1] * vector.y + matrix.m[0][2] * vector.z;
+    result.y = matrix.m[1][0] * vector.x + matrix.m[1][1] * vector.y + matrix.m[1][2] * vector.z;
+    result.z = matrix.m[2][0] * vector.x + matrix.m[2][1] * vector.y + matrix.m[2][2] * vector.z;
+    return result;
+}
+
 
 // Matrix and vector multiplication
 FORCEINLINE v2 m4_multiply_v2(const m4* m, const v2* v) {
@@ -536,14 +545,15 @@ FORCEINLINE m4 quat_to_matrix(const quat* q) {
 }
 
 // Quaternion multiplication
-FORCEINLINE quat quat_multiply(const quat* q1, const quat* q2) {
+FORCEINLINE quat quat_multiply(quat q1, quat q2) {
     quat result;
-    result.w = q1->w * q2->w - q1->x * q2->x - q1->y * q2->y - q1->z * q2->z;
-    result.x = q1->w * q2->x + q1->x * q2->w + q1->y * q2->z - q1->z * q2->y;
-    result.y = q1->w * q2->y - q1->x * q2->z + q1->y * q2->w + q1->z * q2->x;
-    result.z = q1->w * q2->z + q1->x * q2->y - q1->y * q2->x + q1->z * q2->w;
+    result.w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
+    result.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
+    result.y = q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x;
+    result.z = q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w;
     return result;
 }
+
 
 // Quaternion normalization
 FORCEINLINE quat quat_normalize(const quat* q) {

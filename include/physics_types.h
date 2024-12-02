@@ -21,14 +21,42 @@ typedef struct {
     f32 density;       // Mass per unit volume
 } PhysicsMaterial;
 
+// Timed force structure
+typedef struct TimedForce {
+    v3 force;
+    f32 duration;
+    f32 amplification_factor;
+} TimedForce;
+
+// Decay force structure
+typedef struct DecayForce {
+    v3 force;
+    f32 amplification_factor;
+    f32 decay_rate;
+} DecayForce;
+
 // Rigid body dynamics
 typedef struct {
-    v3 velocity;       // Linear velocity
+    v3 position;        // Position of the object
+    quat orientation;   // Orientation of the object
+    v3 velocity;        // Linear velocity
     v3 angular_velocity; // Rotational velocity
-    f32 mass;          // Mass of the object
-    f32 inverse_mass;  // Precomputed inverse mass (0 for immovable objects)
-    m3 inertia_tensor; // Rotational inertia tensor
+    f32 mass;           // Mass of the object
+    f32 inverse_mass;   // Precomputed inverse mass (0 for immovable objects)
+    m3 inertia_tensor;  // Rotational inertia tensor
     m3 inverse_inertia_tensor; // Precomputed inverse of the inertia tensor
+    v3 force;           // Accumulated force
+    v3 torque;          // Accumulated torque
+    f32 max_force_amplification;   // Maximum amplification for forces
+    f32 max_impulse_amplification; // Maximum amplification for impulses
+
+    // Timed forces
+    struct TimedForce* timed_forces;
+    u32 timed_force_count;
+
+    // Decay forces
+    struct DecayForce* decay_forces;
+    u32 decay_force_count;
 } RigidBody;
 
 // Collider types
@@ -69,6 +97,7 @@ typedef struct {
     Collider* collider;      // Pointer to the collider
     bool is_static;          // True if the object is immovable
     WobbleState wobble;      // Wobble and oscillation state
+    Transform transform;     // Overall transform (position, rotation, scale)
 } PhysicsBody;
 
 // Force generators (e.g., gravity, springs)
@@ -375,7 +404,13 @@ typedef struct {
     v3 gravity_override;  // Override for gravity in this zone
     f32 friction_override; // Override for friction
     bool affects_all;      // True if the zone affects all objects
+    bool is_wet;           // Indicates if the surface is wet
+    bool is_icy;           // Indicates if the surface is icy
+    bool is_slippery;      // Indicates if the surface is slippery
+    bool is_sticky;        // Indicates if the surface is sticky
+    bool is_rough;         // Indicates if the surface is rough
 } PhysicsZone;
+
 
 typedef struct {
     Sticker base_sticker;  // Sticker details

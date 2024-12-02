@@ -49,16 +49,6 @@ union m4
 {
   f32 table[4][4];
   v4 v[4];
-
-  FORCEINLINE f32& operator ()(const i16 i, const i16 j)
-  {
-      return table[i][j];
-  }
-
-  FORCEINLINE const f32& operator ()(const i16 i, const i16 j) const
-  {
-      return table[i][j];
-  }
 };
 
 typedef struct {
