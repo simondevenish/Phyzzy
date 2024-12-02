@@ -116,10 +116,22 @@ typedef struct {
 
 // Physics settings for the simulation
 typedef struct {
-    f32 time_step;       // Time step for physics updates
-    u32 max_iterations;  // Maximum solver iterations for constraints
-    bool enable_gravity; // Whether gravity is enabled
+    f32 time_step;           // Time step for physics updates
+    u32 max_iterations;      // Maximum solver iterations for constraints
+    bool enable_gravity;     // Whether gravity is enabled
+    v3 gravity;              // Gravity vector
+    u32 max_bodies;          // Maximum number of physics bodies
+    u32 max_colliders;       // Maximum number of colliders
+    u32 max_joints;          // Maximum number of joints
+    f32 collision_tolerance; // Collision detection tolerance
+    bool enable_sleeping;    // Whether inactive bodies can sleep
+    f32 sleep_threshold;     // Velocity threshold below which a body can sleep
+    f32 linear_damping;      // Default linear damping applied to all bodies
+    f32 angular_damping;     // Default angular damping applied to all bodies
+    u32 max_zones;           // Maximum number of physics zones
+    bool enable_debug_logs;  // Whether debug logging is enabled
 } PhysicsSettings;
+
 
 // Raycast result
 typedef struct {
