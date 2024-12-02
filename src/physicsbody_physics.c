@@ -196,7 +196,7 @@ void physics_body_set_static(PhysicsBody* body, bool is_static) {
                 body->rigid_body->mass = 1.0f; // Default mass
             }
             body->rigid_body->inverse_mass = 1.0f / body->rigid_body->mass;
-            // Recalculate inverse inertia tensor if necessary
+            // Recalculate inverse inertia tensor
             // body->rigid_body->inverse_inertia_tensor = invert_matrix(body->rigid_body->inertia_tensor);
         }
     }
@@ -365,72 +365,102 @@ void physics_body_update_wobble(PhysicsBody* body, f32 delta_time) {
     // body->wobble.amplitude *= damping_factor; // where damping_factor < 1.0f
 }
 
-void physics_body_update_surface_interaction(PhysicsBody* body, const PhysicsZone* floor_zone) {
-    if (body == NULL || floor_zone == NULL) {
-        return;
-    }
-
-    // Apply friction based on the surface
-    apply_friction_for_surface(body, floor_zone);
-
-    // Apply restitution effects if any
-    apply_surface_restitution(body, floor_zone);
-
-    // Adjust for specific surface types
-    //if (/* check if surface is wet */) {
-     //   physics_body_adjust_for_wet_surface(body, floor_zone);
-   // }
-
-    //if (/* check if surface is icy */) {
-     //   physics_body_apply_ice_friction(body, floor_zone);
-   // }
-
-    // Add more surface interactions here
-}
-
 void apply_friction_for_surface(PhysicsBody* body, const PhysicsZone* floor_zone) {
     if (body == NULL || floor_zone == NULL || body->rigid_body == NULL) {
         return;
     }
 
-    // Get the friction coefficient
-    f32 friction_coefficient = floor_zone->friction_override;
+    // Get the friction coefficients
+    f32 kinetic_friction_coefficient = floor_zone->friction_override;
+    f32 static_friction_coefficient = floor_zone->static_friction_coefficient; // Ensure this field exists
 
-    // Apply friction force: F_friction = -μ * N * v_normalized
-    // Assuming N (normal force) is equal to mass * gravity magnitude (simplified)
-    f32 normal_force = body->rigid_body->mass * v3_magnitude(physics_state.settings.gravity);
+    // Calculate the normal force (assuming N = mass * gravity magnitude)
+    f32 gravity_magnitude = v3_magnitude(physics_state.settings.gravity);
+    f32 normal_force = body->rigid_body->mass * gravity_magnitude;
 
-    // Friction force magnitude
-    f32 friction_magnitude = friction_coefficient * normal_force;
+    // Get the body's current velocity
+    v3 velocity = body->rigid_body->velocity;
+    f32 speed = v3_magnitude(velocity);
 
-    // Friction force direction (opposite to velocity)
-    v3 velocity_normalized = v3_normalize(body->rigid_body->velocity);
-    v3 friction_force = v3_scale(velocity_normalized, -friction_magnitude);
+    // Small epsilon to avoid division by zero
+    const f32 epsilon = 1e-5f;
 
-    // Accumulate the friction force
-    body->rigid_body->force = v3_add(body->rigid_body->force, friction_force);
+    if (speed > epsilon) {
+        // Kinetic friction
+        // Friction force magnitude
+        f32 friction_magnitude = kinetic_friction_coefficient * normal_force;
+
+        // Normalize the velocity vector
+        v3 velocity_normalized = v3_scale(velocity, 1.0f / speed);
+
+        // Calculate the friction force
+        v3 friction_force = v3_scale(velocity_normalized, -friction_magnitude);
+
+        // Accumulate the friction force
+        body->rigid_body->force = v3_add(body->rigid_body->force, friction_force);
+    } else {
+        // Static friction
+        // Get the total external force (excluding friction)
+        v3 total_external_force = body->rigid_body->force;
+
+        // Compute the maximum static friction force
+        f32 max_static_friction = static_friction_coefficient * normal_force;
+
+        // Compute the magnitude of external force
+        f32 external_force_magnitude = v3_magnitude(total_external_force);
+
+        if (external_force_magnitude < max_static_friction) {
+            // Cancel out external forces to prevent motion
+            body->rigid_body->force = (v3){0.0f, 0.0f, 0.0f};
+        } else {
+            // Apply static friction force to oppose motion
+            v3 external_force_normalized = v3_scale(total_external_force, 1.0f / external_force_magnitude);
+            v3 friction_force = v3_scale(external_force_normalized, -max_static_friction);
+            body->rigid_body->force = v3_add(body->rigid_body->force, friction_force);
+        }
+    }
 }
 
 void apply_surface_restitution(PhysicsBody* body, const PhysicsZone* floor_zone) {
-    if (body == NULL || floor_zone == NULL || body->rigid_body == NULL) {
+    if (body == NULL || floor_zone == NULL || body->rigid_body == NULL || body->collider == NULL) {
         return;
     }
 
-    // Get the restitution coefficient
-    f32 restitution_coefficient = body->collider->material.restitution;
+    // Get the restitution coefficients
+    f32 body_restitution = body->collider->restitution_coefficient; // Ensure this field exists
+    f32 floor_restitution = floor_zone->restitution_coefficient;    // Ensure this field exists
 
-    // Assuming collision with the floor plane at y = 0
-    if (body->transform.position.y <= 0.0f && body->rigid_body->velocity.y < 0.0f) {
-        // Invert the y-velocity and apply restitution
-        body->rigid_body->velocity.y = -body->rigid_body->velocity.y * restitution_coefficient;
+    // Combine the restitution coefficients (assuming average)
+    f32 restitution_coefficient = (body_restitution + floor_restitution) * 0.5f;
 
-        // Correct the position to prevent sinking below the floor
-        body->transform.position.y = 0.0f;
+    // Determine the floor's Y position
+    f32 floor_y = floor_zone->plane_y; // Ensure this field exists
 
-        // Update rigid body's position
-        body->rigid_body->position.y = 0.0f;
+    // Get the body's lowest point along the Y-axis
+    f32 body_radius = body->collider->bounding_sphere_radius; // Ensure this field exists
+
+    // Calculate the lowest point of the body
+    f32 lowest_point_y = body->transform.position.y - body_radius;
+
+    // Check if the body is penetrating the floor
+    if (lowest_point_y < floor_y) {
+        // Correct the position to prevent interpenetration
+        f32 penetration_depth = floor_y - lowest_point_y;
+        body->transform.position.y += penetration_depth;
+        body->rigid_body->position.y = body->transform.position.y;
+
+        // Reflect the Y component of velocity and apply restitution
+        if (body->rigid_body->velocity.y < 0.0f) {
+            body->rigid_body->velocity.y = -body->rigid_body->velocity.y * restitution_coefficient;
+        }
+
+        // Optionally, apply friction to the tangential velocities (X and Z)
+        f32 friction_damping = 0.8f; // Adjust as needed
+        body->rigid_body->velocity.x *= friction_damping;
+        body->rigid_body->velocity.z *= friction_damping;
     }
 }
+
 
 void physics_body_adjust_for_wet_surface(PhysicsBody* body, PhysicsZone* floor_zone) {
     if (body == NULL || floor_zone == NULL || body->rigid_body == NULL) {
@@ -543,8 +573,8 @@ void physics_body_interact_with_sticky_surface(PhysicsBody* body, const PhysicsZ
     // Accumulate the friction force
     body->rigid_body->force = v3_add(body->rigid_body->force, friction_force);
 
-    // Optional: Apply additional damping
-    body->rigid_body->velocity = v3_scale(body->rigid_body->velocity, 0.5f); // Adjust as needed
+    // Apply additional damping
+    body->rigid_body->velocity = v3_scale(body->rigid_body->velocity, 0.5f); // Config or script to set
 }
 
 void physics_body_simulate_rough_surface(PhysicsBody* body, const PhysicsZone* floor_zone, f32 roughness_factor) {
