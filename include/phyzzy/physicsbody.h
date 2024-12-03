@@ -69,11 +69,11 @@ public:
     void ToggleWobble(bool enable);
 
     // Dynamic floor effects
-    void UpdateSurfaceInteraction(const PhysicsZone& floorZone);
-    void ApplyFrictionForSurface(const PhysicsZone& floorZone);
-    void ApplySurfaceRestitution(const PhysicsZone& floorZone);
-    void AdjustForWetSurface(const PhysicsZone& floorZone);
-    void ApplyIceFriction(const PhysicsZone& floorZone);
+    void UpdateSurfaceInteraction(PhysicsZone& floorZone);
+    void ApplyFrictionForSurface(PhysicsZone& floorZone);
+    void ApplySurfaceRestitution(PhysicsZone& floorZone);
+    void AdjustForWetSurface(PhysicsZone& floorZone);
+    void ApplyIceFriction(PhysicsZone& floorZone);
 
      // Advanced floor interaction
     void AdjustForSlipperySurface(const PhysicsZone& floorZone);
@@ -81,7 +81,7 @@ public:
     void SimulateRoughSurface(const PhysicsZone& floorZone, f32 roughnessFactor);
 
     // Combined floor effects
-    void ApplyCombinedSurfaceEffects(const PhysicsZone& floorZone);
+    void ApplyCombinedSurfaceEffects(PhysicsZone& floorZone);
     void CheckSurfaceTransition(const PhysicsZone& previousZone, const PhysicsZone& currentZone);
 
     // Force and impulse amplification
