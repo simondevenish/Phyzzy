@@ -74,19 +74,18 @@ typedef enum {
 } ColliderType;
 
 typedef struct {
-    ColliderType type;
-    PhysicsMaterial material;
-    Transform transform; // Position, rotation, and scale of the collider
-    f32 restitution_coefficient;
-    f32 bounding_sphere_radius;
+    ColliderType type;           // Type of collider (sphere, AABB, etc.)
+    PhysicsMaterial material;    // Material properties (friction, restitution, etc.)
+    Transform transform;         // Position, rotation, and scale of the collider
+    f32 restitution_coefficient; // Coefficient of restitution (bounciness)
+    f32 bounding_sphere_radius;  // Radius of the bounding sphere (used for broad-phase optimizations)
     union {
-        Sphere sphere;
-        AABB aabb;
-        OBB obb;
-        Plane plane;
-        BoundingCapsule capsule;
-        Mesh mesh;
-        f32 bounding_sphere_radius;
+        Sphere sphere;           // Sphere-specific data
+        AABB aabb;               // Axis-aligned bounding box data
+        OBB obb;                 // Oriented bounding box data
+        Plane plane;             // Plane-specific data
+        BoundingCapsule capsule; // Capsule-specific data
+        Mesh mesh;               // Mesh-specific data
     };
 } Collider;
 
