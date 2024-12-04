@@ -30,3 +30,35 @@
 *.exe
 *.out
 *.app
+
+# CMake-specific
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Build directories
+build/
+PhyzzyLib/
+
+# Logs and debugging
+*.log
+*.tmp
+*.stackdump
+
+# IDE-specific files
+.idea/
+.vscode/
+*.code-workspace
+
+# MacOS-specific
+.DS_Store
+
+# Windows-specific
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.bak
+*.swp
+*~
