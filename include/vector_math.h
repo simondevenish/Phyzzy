@@ -19,7 +19,14 @@
 extern "C" {
 #endif
 
-#define FORCEINLINE static inline
+// Identity matrix
+const m4 identity = {{
+    {1, 0, 0, 0},
+    {0, 1, 0, 0},
+    {0, 0, 1, 0},
+    {0, 0, 0, 1}
+}};
+
 
 FORCEINLINE f32 min(f32 a, f32 b) { return a < b ? a : b; }
 FORCEINLINE f32 max(f32 a, f32 b) { return a > b ? a : b; }
@@ -87,7 +94,8 @@ FORCEINLINE v2 v2_normalize(const v2* v) {
     if (mag > 0.0f) {
         return v2_scale(v, 1.0f / mag);
     } else {
-        return (v2){0.0f, 0.0f};
+        v2 result = {0.0f, 0.0f};
+        return result;
     }
 }
 
@@ -169,7 +177,8 @@ FORCEINLINE v3 v3_normalize(v3 v) {
     if (mag > 0.0f) {
         return v3_scale(v, 1.0f / mag);
     } else {
-        return (v3){0.0f, 0.0f, 0.0f};
+        v3 result = {0.0f, 0.0f, 0.0f};
+        return result;
     }
 }
 
@@ -345,16 +354,9 @@ FORCEINLINE m4 m4_multiply(const m4* a, const m4* b) {
     return result;
 }
 
-// Identity matrix
-static const m4 identity = {{
-    {1, 0, 0, 0},
-    {0, 1, 0, 0},
-    {0, 0, 1, 0},
-    {0, 0, 0, 1}
-}};
-
 // Matrix determinant (placeholder)
 FORCEINLINE f32 m4_determinant(const m4* m) {
+    (void)(m);
     // Placeholder implementation
     return 0.0f;
 }
@@ -424,13 +426,15 @@ FORCEINLINE m4 m4_transpose(const m4* m) {
 
 // Matrix inversion (placeholder)
 FORCEINLINE bool m4_invert(const m4* m, m4* out) {
+    (void)(m);
+    (void)(out);
     // Placeholder: Actual implementation is complex
     return false;
 }
 
 // Frustum creation
 FORCEINLINE m4 frustum(f32 l, f32 r, f32 b, f32 t, f32 n, f32 f) {
-    m4 mat = {0};
+    m4 mat;
     mat.table[0][0] = 2.0f * n / (r - l);
     mat.table[1][1] = 2.0f * n / (t - b);
     mat.table[0][2] = (r + l) / (r - l);
@@ -571,7 +575,8 @@ FORCEINLINE quat quat_normalize(const quat* q) {
         result.w = q->w * inv_mag;
         return result;
     } else {
-        return (quat){0.0f, 0.0f, 0.0f, 1.0f};
+        quat result = {0.0f, 0.0f, 0.0f, 1.0f};
+        return result;
     }
 }
 
@@ -633,7 +638,8 @@ FORCEINLINE quat quat_inverse(const quat* q) {
         result.w = q->w * inv_norm_sq;
         return result;
     } else {
-        return (quat){0.0f, 0.0f, 0.0f, 1.0f};
+        quat result = {0.0f, 0.0f, 0.0f, 1.0f};
+        return result;
     }
 }
 

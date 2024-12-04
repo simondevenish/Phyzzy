@@ -461,29 +461,6 @@ void apply_surface_restitution(PhysicsBody* body, const PhysicsZone* floor_zone)
     }
 }
 
-
-void physics_body_adjust_for_wet_surface(PhysicsBody* body, PhysicsZone* floor_zone) {
-    if (body == NULL || floor_zone == NULL || body->rigid_body == NULL) {
-        return;
-    }
-
-    // Increase slipperiness by reducing friction
-    f32 wet_friction_factor = 0.5f; // Example value; adjust as needed
-    floor_zone->friction_override *= wet_friction_factor;
-}
-
-void physics_body_apply_ice_friction(PhysicsBody* body, PhysicsZone* floor_zone) {
-    if (body == NULL || floor_zone == NULL || body->rigid_body == NULL) {
-        return;
-    }
-
-    // Set friction to a very low value
-    floor_zone->friction_override = 0.01f; // Near frictionless
-
-    // Re-apply friction with the new value
-    apply_friction_for_surface(body, floor_zone);
-}
-
 void physics_body_adjust_for_wet_surface(PhysicsBody* body, PhysicsZone* floor_zone) {
     if (body == NULL || floor_zone == NULL || body->rigid_body == NULL) {
         return;

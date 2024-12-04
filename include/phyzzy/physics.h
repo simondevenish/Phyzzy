@@ -23,14 +23,14 @@ static struct {
     PhysicsSettings settings; // Stores configuration settings
     bool initialized;         // Tracks if the system is initialized
     void* internal_data;      // Placeholder for internal state (e.g., spatial grids, caches)
-} physics_state = { 0 };
+} physics_state;
 
 // Declare global physics state variables
 extern PhysicsSettings g_physics_settings;
 
 // Physics system lifecycle
 void physics_initialize(PhysicsSettings* settings);
-void physics_cleanup();
+void physics_cleanup(void);
 
 #ifdef __cplusplus
 }

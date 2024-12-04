@@ -21,27 +21,28 @@ extern "C" {
 #define DEG2RAD(x) ((x) * (PI / 180.0f))
 #define RAD2DEG(x) ((x) * (180.0f / PI))
 
-typedef union v2 v2;
-typedef union v3 v3;
-typedef union v4 v4;
-typedef union m4 m4;
+typedef struct v2 v2;
+typedef struct v3 v3;
+typedef struct v4 v4;
+typedef struct m4 m4;
 
-union v2
+typedef struct { i32 x, y; } v2i;
+typedef struct { i32 x, y, z; } v3i;
+typedef struct { i32 x, y, z, w; } v4i;
+
+struct v2
 {
-  f32 v[2];
-  struct { f32 x, y; };
+    f32 x, y;
 };
 
-union v3
+struct v3
 {
-  f32 v[3];
-  struct { f32 x, y, z; };
+    f32 x, y, z;
 };
 
-union v4
+struct v4
 {
-  f32 v[4];
-  struct { f32 x, y, z, w; };
+    f32 x, y, z, w;
 };
 
 typedef struct {
@@ -49,11 +50,14 @@ typedef struct {
 } m3;
 
 
-union m4
+struct m4
 {
   f32 table[4][4];
-  v4 v[4];
 };
+
+typedef struct {
+    f32 x, y, z, w;
+} quat;
 
 typedef struct {
     v3 normal;  // Normal vector of the plane
@@ -88,10 +92,6 @@ typedef struct {
 typedef struct {
     f32 u, v;
 } UV;
-
-typedef struct {
-    f32 x, y, z, w;
-} quat;
 
 typedef struct {
     v3 min;
@@ -287,10 +287,6 @@ typedef struct {
     v3 control_point; // Middle control point
     v3 end;
 } CurveSegment;
-
-typedef struct { i32 x, y; } v2i;
-typedef struct { i32 x, y, z; } v3i;
-typedef struct { i32 x, y, z, w; } v4i;
 
 #ifdef __cplusplus
 }

@@ -54,7 +54,7 @@ void physics_initialize(PhysicsSettings* settings)
     physics_state.initialized = true;
 }
 
-void physics_cleanup()
+void physics_cleanup(void)
 {
     if (!physics_state.initialized) {
         // Phyzzy is not initialized

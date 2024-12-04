@@ -48,8 +48,8 @@ void physics_body_toggle_wobble(PhysicsBody* body, bool enable);  // Enable or d
 
 // Dynamic floor effects
 void physics_body_update_surface_interaction(PhysicsBody* body, PhysicsZone* floor_zone);
-void apply_friction_for_surface(PhysicsBody* body, PhysicsZone* floor_zone);
-void apply_surface_restitution(PhysicsBody* body, PhysicsZone* floor_zone);
+void apply_friction_for_surface(PhysicsBody* body, const PhysicsZone* floor_zone);
+void apply_surface_restitution(PhysicsBody* body, const PhysicsZone* floor_zone);
 void physics_body_adjust_for_wet_surface(PhysicsBody* body, PhysicsZone* floor_zone);
 void physics_body_apply_ice_friction(PhysicsBody* body, PhysicsZone* floor_zone);
 

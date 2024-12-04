@@ -22,10 +22,7 @@ class PhysicsBodyThing
 private:
     std::unique_ptr<::PhysicsBody, void(*)(::PhysicsBody*)> c_body;
 
-       ::RigidBody* GetRigidBody() const
-    {
-        return c_body ? c_body->rigid_body : nullptr;
-    }
+    ::RigidBody* GetRigidBody() const;
 public:
     // Constructor
     explicit PhysicsBodyThing(::PhysicsBody* body);
@@ -44,7 +41,7 @@ public:
     // Physics body management
     void Destroy();
     void SetMass(const f32 mass);
-    const f32 GetMass() const;
+    f32 GetMass() const;
     void SetVelocity(const v3& velocity);
     const v3 GetVelocity() const;
     void SetAngularVelocity(const v3& angularVelocity);

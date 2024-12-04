@@ -22,10 +22,6 @@ PhysicsBodyThing::PhysicsBodyThing(::PhysicsBody* body)
 {
 }
 
-// Destructor (defaulted)
-PhysicsBodyThing::~PhysicsBodyThing() = default;
-
-
 // Move constructor
 PhysicsBodyThing::PhysicsBodyThing(PhysicsBodyThing&& other) noexcept
     : c_body(std::move(other.c_body))
@@ -63,9 +59,9 @@ void PhysicsBodyThing::SetMass(const f32 mass)
     }
 }
 
-const f32 PhysicsBodyThing::GetMass() const
+f32 PhysicsBodyThing::GetMass() const
 {
-    const ::RigidBody* rigidBody = GetRigidBody();
+    ::RigidBody* rigidBody = GetRigidBody();
     if (rigidBody)
     {
         f32 mass = 0.0f;
@@ -86,7 +82,7 @@ void PhysicsBodyThing::SetVelocity(const v3& velocity)
 
 const v3 PhysicsBodyThing::GetVelocity() const
 {
-    const ::RigidBody* rigidBody = GetRigidBody();
+    ::RigidBody* rigidBody = GetRigidBody();
     if (rigidBody)
     {
         v3 velocity = {0.0f, 0.0f, 0.0f};
@@ -107,7 +103,7 @@ void PhysicsBodyThing::SetAngularVelocity(const v3& angularVelocity)
 
 const v3 PhysicsBodyThing::GetAngularVelocity() const
 {
-    const ::RigidBody* rigidBody = GetRigidBody();
+    ::RigidBody* rigidBody = GetRigidBody();
     if (rigidBody)
     {
         v3 angularVelocity = {0.0f, 0.0f, 0.0f};
